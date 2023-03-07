@@ -21,6 +21,7 @@ extern double corners[8][6][4][3];
 extern double edges[12][6][4][3];
 void init_corner();
 void init_edge();
+void init_cube_color();
 void product(double matrix[3][3], double vector[3]);
 //--------------rubik----------------------------
 #define QLIM 20
@@ -61,3 +62,4 @@ void F_(d_state* x);
 void U_(d_state* x);
 void D_(d_state* x);
 #endif
+
