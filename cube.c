@@ -1,3 +1,4 @@
+
 #include<stdlib.h>
 #include"header.h"
 double cube[6][4][3] = {
@@ -71,6 +72,58 @@ double edge_seed[12][3] = {
 	{20,0,40},
 	{0,0,20},
 };
+typedef struct data_face{
+	double face[4][3];
+	double color[3];
+}d_face;
+d_face corners[8][6];
+d_face edges[12][6];
+void init_corner(){
+	for (int i = 0; i < 8;i++) {
+		for (int j = 0; j < 6;j++) {
+			for (int k = 0; k < 4;k++) {
+				for (int l = 0; l < 3;l++) {
+				   corners[i][j].face[k][l] = corner_seed[i][l] + cube[j][k][l];
+				}
+			}
+		}
+	}
+}
+void init_edges(){
+	for (int i = 0; i < 12; i++) {
+		for (int j = 0; j < 6; j++) {
+			for (int k = 0; k < 4; k++) {
+				for (int l = 0; l < 3; l++) {
+					edges[i][j].face[k][l] = edge_seed[i][l] + cube[j][k][l];
+				}
+			}
+		}
+	}
+}
+void init_cube_color(){
+	double colors[6][3] = {
+		{1.0,1.0,1.0},
+		{1.0,0.0,0.0},
+		{0.0,1.0,0.0},
+		{1.0,1.0,0.0},
+		{1.0,0.5,0.0},
+		{0.0,0.0,1.0}
+	};
+	for(int i = 0;i<8;i++)
+	{
+		for(int j = 0;j<6;j++){
+			corners[i][j].color = colors[j];
+		}
+	}
+	for(int i = 0;i<12;i++)
+	{
+		for(int j = 0;j<6;j++)
+		{
+			edges[i][j].color = colors[j];
+		}
+	}
+}
+/*
 double corners[8][6][4][3];
 double edges[12][6][4][3];
 void init_corner() {
@@ -94,4 +147,4 @@ void init_edge() {
 			}
 		}
 	}
-}
+}*/
