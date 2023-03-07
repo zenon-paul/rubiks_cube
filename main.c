@@ -11,6 +11,11 @@ int a = 1;
 int s = 3;
 int move_memo = 0;
 extern double cube[6][4][3];
+typedef (*rfunc)(int);
+typedef (*xyzfunc)(double,double*);
+rfunc rotate[18] = {r_r,l_r,f_r,b_r,u_r,d_r,r__r,l__r,f__r,b__r,u__r,d__r,
+	r2_r,l2_r,f2_r,b2_r,u2_r,d2_r};
+xyzfunc xyzrotate[3] = {xrotate,yrotate,zrotate};
 d_state state;
 void clear() {
 	for (int i = 0; i < 6;i++) {
@@ -84,6 +89,29 @@ void zrotate(double degree, double xyz[3]) {
 	xyz[1] += Y_AXIS;
 	xyz[2] += Z_AXIS;
 }
+void rotate(int f,int xyzmode){
+	for(int i = 0;i<4;i++)
+		{
+			for(int j = 0;j<6;j++)
+			{
+				for(int k = 0;k<4;k++)
+				{
+					(xyzrotate[xyzmode])(p,corners[face_set[f][i]][j].face[k]);
+				}
+			}
+		}
+		for(int i = 0;i<4;i++)
+		{
+			for(int j = 0;j<6;j++)
+			{
+				for(ini k = 0;k<4;k++)
+				{
+					(xyzrotate[xyzmode])(p,edges[face_set[f][i+4]][j].face[k]);
+				}
+			}
+		}
+}
+
 void disp_cube() {
 	int normal[6][3] = {
 		{0,1,0},
@@ -112,8 +140,9 @@ void disp_cube() {
 		}
 	}*/
 
+	
 	//for (int i = 0; i < 8; i++) {
-		for (int j = 0; j < 4;j++) {
+		/*for (int j = 0; j < 4;j++) {
 			for (int k = 0; k < 6; k++) {
 				glNormal3iv(normal[k]);
 				glColor3dv(color[k]);
@@ -132,9 +161,36 @@ void disp_cube() {
 					glVertex3dv(edges[face_posi[0][j+4]][k][l]);
 				}
 			}
-		}
+		}*/
 	//}
-
+	glBegin(GL_QADS);
+	for(int i = 0;i<6;i++)
+	{
+		for(int j = 0;j<8;j++)
+		{
+			for(int k = 0;k<6;k++)
+			{
+				glNormal3iv(normal[k]);
+				glColor3dv(corners[j][k].color);
+				for(int l = 0;l<4;l++)
+				{
+					glVertex3dv(corners[j][k].face[l]);
+				}
+			}
+		}
+		for(int j = 0;j<12;j++)
+		{
+			for(int k = 0;k<6;k++)
+			{
+				glNormal3iv(normal[k]);
+				glColor3dv(edges[j][k].color);
+				for(int l = 0;l<4;l++)
+				{
+					glVertex3dv(glVertex3dv(edges[j][k].face[l]););
+				}
+			}
+		}
+	}
 	glEnd();
 	glFlush();
 }
@@ -207,7 +263,9 @@ void disp() {
 				zrotate(p, cube[i][j]);
 			}
 		}*/
-		for (int j = 0; j < 4;j++) {
+		
+		
+		/*for (int j = 0; j < 4;j++) {
 			for (int k = 0; k < 6;k++) {
 				for (int l = 0; l < 4;l++) {
 					xrotate(p,corners[face_posi[0][j]][k][l]);
@@ -220,7 +278,8 @@ void disp() {
 					xrotate(p, edges[face_posi[0][j+4]][k][l]);
 				}
 			}
-		}
+		}*/
+		
 		if (p) {
 			count++;
 		}
@@ -254,6 +313,7 @@ int main(int argc, char** argv) {
 	init_state(&state);
 	init_corner();
 	init_edge();
+	init_cube_color();
 	glutInit(&argc, argv);
 	glutInitWindowSize(width,hight);
 	glutInitDisplayMode(GLUT_DOUBLE |GLUT_DEPTH);//GL_だとうまくいかない
