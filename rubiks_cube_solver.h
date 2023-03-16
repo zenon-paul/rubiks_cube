@@ -9,8 +9,6 @@
 #include"rubiks_cube_definition.h"
 
 #define QLIM 40
-#define NUM_CORNER 8
-#define NUM_EDGE 12
 #define NUM_CO 2187
 #define NUM_EO 2048
 #define NUM_E_CON 495
@@ -29,18 +27,38 @@ typedef struct phase2_data {
 	int index_e_ep;
 }d_phase2_state;
 
-extern func phase1_move[PHASE1_MOVE];
-extern func phase2_move[PHASE2_MOVE];
+//extern func phase1_move[PHASE1_MOVE];
+//extern func phase2_move[PHASE2_MOVE];
 extern int co_move_table[NUM_CO][PHASE1_MOVE];
 extern int eo_move_table[NUM_EO][PHASE1_MOVE];
 extern int e_con_move_table[NUM_E_CON][PHASE1_MOVE];
 extern int cp_move_table[NUM_CP][PHASE2_MOVE];
 extern int ud_ep_move_table[NUM_UD_EP][PHASE2_MOVE];
 extern int e_ep_move_table[NUM_E_EP][PHASE2_MOVE];
-extern int co_e_con_prune_table[NUM_CO][NUM_E_CON];
-extern int eo_e_con_prune_table[NUM_EO][NUM_E_CON];
-extern int cp_e_ep_prune_table[NUM_CP][NUM_E_EP];
-extern int ud_ep_e_ep_prune_table[NUM_UD_EP][NUM_E_EP];
+//extern int co_e_con_prune_table[NUM_CO][NUM_E_CON];
+//xtern int eo_e_con_prune_table[NUM_EO][NUM_E_CON];
+//extern int cp_e_ep_prune_table[NUM_CP][NUM_E_EP];
+//extern int ud_ep_e_ep_prune_table[NUM_UD_EP][NUM_E_EP];
+int get_co_move_table(int co, int mv);
+int get_eo_move_table(int eo, int mv);
+int get_e_con_move_table(int e_con, int mv);
+int get_cp_move_table(int cp, int mv);
+int get_ud_ep_move_table(int ud_ep, int mv);
+int get_e_ep_move_table(int e_ep, int mv);
+int get_co_e_con_prune_table(int co, int e_com);
+int get_eo_e_con_prune_table(int eo, int e_con);
+int get_cp_e_ep_prune_table(int cp, int e_ep);
+int get_ud_ep_e_ep_prune_table(int ud_ep, int e_ep);
+void updata_co_move_table(int co, int mv, int val);
+void updata_eo_move_table(int eo, int mv, int val);
+void updata_e_con_move_table(int e_con, int mv, int val);
+void updata_cp_move_table(int cp, int mv, int val);
+void updata_ud_ep_move_table(int ud_ep, int mv, int val);
+void updata_e_ep_move_table(int e_ep, int mv, int val);
+void updata_co_e_con_prune_table(int co, int e_con, int val);
+void updata_eo_e_con_prune_table(int eo, int e_con, int val);
+void updata_cp_e_ep_prune_table(int cp, int e_ep, int val);
+void updata_ud_ep_e_ep_prune_table(int ud_ep, int e_ep, int val);
 
 int co_to_index(int co[8]);
 void index_to_co(int co[8], int index);
@@ -59,6 +77,5 @@ void move2(d_phase2_state from2, d_phase2_state* to2, int move);
 void init_transfer_table();
 void init_prune_table();
 void shuffle(d_state* x, char q[QLIM][3], int n);
-void pre_process_for_start_starch();
-void start_search(d_state start0);
+void search(d_state start0);
 #endif
