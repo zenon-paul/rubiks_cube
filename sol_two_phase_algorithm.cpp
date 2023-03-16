@@ -1,5 +1,6 @@
 #include"rubiks_cube_solver.h"
 #include<stdio.h>
+static int gene = 0;
 static int is_phase1_move_available(int premove, int currmove) {
 	if (premove == PHASE1_MOVE) {
 		return 1;
@@ -181,7 +182,7 @@ static int phase1_ida_star(d_phase1_state from1, int current, int count, int dep
 	if (is_solved_phase1(from1)) {
 		return 0;
 	}
-	if (((depth - count) < co_e_con_prune_table[from1.index_co][from1.index_e_con]) || ((depth - count) < eo_e_con_prune_table[from1.index_eo][from1.index_e_con])) {
+	if (((depth - count) < get_co_e_con_prune_table(from1.index_co,from1.index_e_con)) || ((depth - count) < get_eo_e_con_prune_table(from1.index_eo,from1.index_e_con))) {
 		return 1;
 	}
 	for (int i = 0; i < PHASE1_MOVE; i++) {
@@ -189,9 +190,9 @@ static int phase1_ida_star(d_phase1_state from1, int current, int count, int dep
 			d_phase1_state to1;
 			move1(from1, &to1, i);
 			f = phase1_ida_star(to1, i, count + 1, depth);
-			path1[mnum1] = i;
+			path1[gene][mnum1[gene]] = i;
 			if (f == 0) {
-				mnum1++;
+				mnum1[gene]++;
 				return 0;
 			}
 		}
@@ -203,7 +204,7 @@ static int phase2_ida_star(d_phase2_state from2, int current, int count, int dep
 	if (is_solved_phase2(from2)) {
 		return 0;
 	}
-	if (((depth - count) < cp_e_ep_prune_table[from2.index_cp][from2.index_e_ep]) || ((depth - count) < ud_ep_e_ep_prune_table[from2.index_ud_ep][from2.index_e_ep])) {
+	if (((depth - count) < get_cp_e_ep_prune_table(from2.index_cp,from2.index_e_ep)) || ((depth - count) < get_ud_ep_e_ep_prune_table(from2.index_ud_ep,from2.index_e_ep))) {
 		return 1;
 	}
 	for (int i = 0; i < PHASE2_MOVE; i++) {
@@ -211,9 +212,9 @@ static int phase2_ida_star(d_phase2_state from2, int current, int count, int dep
 			d_phase2_state to2;
 			move2(from2, &to2, i);
 			f = phase2_ida_star(to2, i, count + 1, depth);
-			path2[mnum2] = i;
+			path2[gene][mnum2[gene]] = i;
 			if (f == 0) {
-				mnum2++;
+				mnum2[gene]++;
 				return 0;
 			}
 		}
@@ -232,35 +233,44 @@ static void phase2_solver(d_phase2_state start) {
 		depth++;
 	}
 }
-void pre_process_for_start_starch() {
-	init_move();
-	init_transfer_table();
-	init_prune_table();
+void copy_state(d_state* to) {
+	d_state* from = get_state_value_address();
+	for (int i = 0; i < NUM_CORNER;i++) {
+		to->cp[i] = from->cp[i];
+		to->co[i] = from->co[i];
+	}
+	for (int i = 0; i < NUM_EDGE;i++) {
+		to->ep[i] = from->ep[i];
+		to->eo[i] = from->eo[i];
+	}
 }
-void start_search(d_state start0) {
+void search(d_state start) {
+	//d_state rest[GENERATION];
 	d_phase1_state state1;
 	d_phase2_state state2;
 	int qnum = 0;
 	char query[QLIM][3] = { 0 };
-	state1.index_co = co_to_index(start0.co);
-	state1.index_eo = eo_to_index(start0.eo);
-	state1.index_e_con = e_con_to_index(start0.ep);
-	phase1_solver(state1);
-	printf("%d \n",mnum1);
-	printf("\n[");
-	for (int i = mnum1 - 1; i >= 0; i--) {
-		(phase1_move[path1[i]])(&start0);
-		printf("%d ", path1[i]);
+	for (int i = 0; i < GENERATION; i++) {
+		state1.index_co = co_to_index(start.co);
+		state1.index_eo = eo_to_index(start.eo);
+		state1.index_e_con = e_con_to_index(start.ep);
+		phase1_solver(state1);
+		for (int i = mnum1[gene] - 1; i >= 0; i--) {
+			phase1_motion(&start, path1[gene][i]);
+			//(phase1_move[path1[i]])(&start);
+		}
 	}
-	printf("\n");
-	state2.index_cp = cp_to_index(start0.cp);
-	state2.index_ud_ep = ud_ep_to_index(start0.ep);
-	state2.index_e_ep = e_ep_to_index(start0.ep);
-	phase2_solver(state2);
-	printf("%d \n", mnum2);
-	printf("\n[");
-	for (int i = mnum2 - 1; i >= 0; i--) {
-		printf("%d ", path2[i]);
+		state2.index_cp = cp_to_index(start.cp);
+		state2.index_ud_ep = ud_ep_to_index(start.ep);
+		state2.index_e_ep = e_ep_to_index(start.ep);
+		phase2_solver(state2);
+	
+	for (int i = 0; i < mnum2[gene]; i++) {
+		motion_list[motion_count] = coorresponding_table_from_phase2_move_to_phase1_move[path2[gene][i]];
+		motion_count++;
 	}
-	printf("\n");
+	for (int i = 0; i < mnum1[gene]; i++) {
+		motion_list[motion_count] = path1[gene][i];
+		motion_count++;
+	}
 } 
