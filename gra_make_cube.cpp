@@ -1,5 +1,5 @@
 #include"rubiks_cube_graphic.h"
-double cube[6][4][3] = {
+static double cube[6][4][3] = {
 		{
 			{0,EG,0},
 			{0,EG,EG},
@@ -37,14 +37,14 @@ double cube[6][4][3] = {
 			{0,EG,0}
 		}
 };
-int face_set[6][8] = {
+/*int face_set[6][8] = {
 	{1,2,5,6,1,2,5,9},
 	{0,3,4,7,0,3,7,11},
 	{2,3,6,7,2,3,6,10},
 	{0,1,4,5,0,1,4,8},
 	{0,1,2,3,4,5,6,7},
 	{4,5,6,7,8,9,10,11}
-};
+};*/
 int face_posi[6][8] = {
 	{1,2,5,6,1,2,5,9},
 	{0,3,4,7,0,3,7,11},
@@ -53,7 +53,7 @@ int face_posi[6][8] = {
 	{0,1,2,3,4,5,6,7},
 	{4,5,6,7,8,9,10,11}
 };
-double corner_seed[8][3] = {
+static double corner_seed[8][3] = {
 	{0,40,0},
 	{40,40,0},
 	{40,40,40},
@@ -63,7 +63,7 @@ double corner_seed[8][3] = {
 	{40,0,40},
 	{0,0,40},
 };
-double edge_seed[12][3] = {
+static double edge_seed[12][3] = {
 	{0,20,0},
 	{40,20,0},
 	{40,20,40},
@@ -77,7 +77,7 @@ double edge_seed[12][3] = {
 	{20,0,40},
 	{0,0,20},
 };
-double axis_seed[6][3] = {
+static double axis_seed[6][3] = {
 	{40,20,20},
 	{0,20,20},
 	{20,20,40},
@@ -121,15 +121,7 @@ void init_axises() {
 		}
 	}
 }
-void init_cube_color() {
-	double colors[6][3] = {
-		{1.0,1.0,1.0},
-		{1.0,0.0,0.0},
-		{0.0,1.0,0.0},
-		{1.0,1.0,0.0},
-		{1.0,0.5,0.0},
-		{0.0,0.0,1.0}
-	};
+void init_cube_color(double colors[6][3]) {
 	for (int i = 0; i < 8; i++)
 	{
 		for (int j = 0; j < 6; j++) {
@@ -148,10 +140,18 @@ void init_cube_color() {
 		}
 	}
 }
-void init_face_posi(int posi[6][8]) {
-	for (int i = 0; i < 6;i++) {
-		for (int j = 0; j < 8;j++) {
+/*void init_face_position(int posi[6][8]) {
+	static int face_set[6][8] = {
+	{1,2,5,6,1,2,5,9},
+	{0,3,4,7,0,3,7,11},
+	{2,3,6,7,2,3,6,10},
+	{0,1,4,5,0,1,4,8},
+	{0,1,2,3,4,5,6,7},
+	{4,5,6,7,8,9,10,11}
+	};
+	for (int i = 0; i < 6; i++) {
+		for (int j = 0; j < 8; j++) {
 			posi[i][j] = face_set[i][j];
 		}
 	}
-}
+}*/
