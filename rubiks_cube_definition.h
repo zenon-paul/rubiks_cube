@@ -18,7 +18,7 @@
 #define D_CENTER 49
 #define NUM_FACE 6
 #define NUM_3_SQUARED 9
-#define GENERATION 100
+//#define GENERATION 100
 
 typedef struct s_data {
 	int cp[8];
@@ -28,10 +28,10 @@ typedef struct s_data {
 }d_state;
 
 typedef void(*func)(d_state*);
-extern int path1[VECTOR_LEN][GENERATION];
-extern int path2[VECTOR_LEN][GENERATION];
-extern int mnum1[GENERATION];
-extern int mnum2[GENERATION];
+extern int path1[VECTOR_LEN];
+extern int path2[VECTOR_LEN];
+extern int mnum1;
+extern int mnum2;
 extern int motion_count;
 extern int motion_list[VECTOR_LEN];
 //extern func phase1_move[PHASE1_MOVE];

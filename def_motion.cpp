@@ -1,9 +1,9 @@
 #include"rubiks_cube_definition.h"
 #include<stdio.h>
-int path1[VECTOR_LEN][GENERATION] = { 0 };
-int path2[VECTOR_LEN][GENERATION] = { 0 };
-int mnum1[GENERATION] = { 0 };
-int mnum2[GENERATION] = { 0 };
+int path1[VECTOR_LEN] = { 0 };
+int path2[VECTOR_LEN] = { 0 };
+int mnum1 = 0;
+int mnum2 = 0;
 int motion_count = 0;
 int motion_list[VECTOR_LEN] = { 0 };
 static func phase1_move[PHASE1_MOVE] = { R,L,F,B,U,D,R_,L_,F_,B_,U_,D_,R2,L2,F2,B2,U2,D2 };
@@ -552,15 +552,11 @@ void phase2_motion(d_state* x, int i) {
 }
 void init_motion_list() {
 	motion_count = 0;
-	for (int i = 0; i < GENERATION;i++) {
-		mnum1[i] = 0;
-		mnum2[i] = 0;
-	}
+	mnum1 = 0;
+	mnum2 = 0;
 	for (int i = 0; i < VECTOR_LEN; i++) {
-		for (int j = 0; j < GENERATION;j++) {
-			path1[i][j] = 0;
-			path2[i][j] = 0;
-		}
+		path1[i] = 0;
+		path2[i] = 0;
 	}
 }
 static void init_corner_index_table() {
