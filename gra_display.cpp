@@ -1,61 +1,39 @@
-
 #include"rubiks_cube_graphic.h"
 #include<GL/glut.h>
 #include<stdio.h>
 #include<math.h>
-static int input = 18;
-static int mode = 0;
-static char key_set[19] = { 'q','w','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k','x'};
-//static int moves[60] = { 0 };
-//d_state state;
-static int corresponding_table_from_move_to_degree_and_direction[2][19] = {
-	{ 0,0, 2,2, 1,1,    0, 0,2, 2,1,1,   0,0,2,2,1,1     ,0},
-	{1,-1,-1,1,1,-1,    -1,1,1,-1,-1,1 , -2,2,-2,2,-2,2  ,0}
+static int input = PHASE1_MOVE;/*18・・・非回転時　その他・・・回転時*/
+static int mode = 0;/*0 ・・・入力可能　1・・・入力不可（再生モード）*/
+static int count_down_motion = 0;
+static char key_set[PHASE1_MOVE+1] = { 'q','w','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k','x'};
+static int corresponding_table_from_move_to_degree_and_direction[2][PHASE1_MOVE+1] = {
+	{0,0,2,2,1,1,0, 0,2,2,1,1,0,0,2,2,1,1,0},
+	{1,-1,-1,1,1,-1,-1,1,1,-1,-1,1,-2,2,-2,2,-2,2,0}
 };
 static void floor_value_of_coordinate(int face) {
-	for (int i = 0; i < 4;i++) {
-		for (int j = 0; j < 6; j++) {
-			for (int k = 0; k < 4; k++) {
+	for (int i = 0; i < NUM_FOUR_CORNER;i++) {
+		for (int j = 0; j < NUM_FACE; j++) {
+			for (int k = 0; k < NUM_FOUR_CORNER; k++) {
 				for (int l = 0; l < 3; l++) {
-					corners[face_posi[face % 6][i]][j].face[k][l] = round(corners[face_posi[face % 6][i]][j].face[k][l] / 10) * 10;
+					corners[face_posi[face % NUM_FACE][i]][j].face[k][l] = round(corners[face_posi[face % NUM_FACE][i]][j].face[k][l] / 10) * 10;
 				}
 			}
 		}
 	}
-	for (int i = 0 + 4; i < 4 + 4; i++) {
-		for (int j = 0; j < 6; j++) {
-			for (int k = 0; k < 4; k++) {
+	for (int i = 4; i < 4 + NUM_FOUR_CORNER; i++) {
+		for (int j = 0; j < NUM_FACE; j++) {
+			for (int k = 0; k < NUM_FOUR_CORNER; k++) {
 				for (int l = 0; l < 3; l++) {
-					edges[face_posi[face % 6][i]][j].face[k][l] = round(edges[face_posi[face % 6][i]][j].face[k][l] / 10) * 10;
+					edges[face_posi[face % NUM_FACE][i]][j].face[k][l] = round(edges[face_posi[face % NUM_FACE][i]][j].face[k][l] / 10) * 10;
 				}
 			}
 		}
 	}
-	for (int i = 0; i < 6;i++) {
-		for (int j = 0; j < 4;j++) {
+	for (int i = 0; i < NUM_FACE;i++) {
+		for (int j = 0; j < NUM_FOUR_CORNER;j++) {
 			for (int k = 0; k < 3;k++) {
-				axises[face % 6][i].face[j][k] = round(axises[face % 6][i].face[j][k] / 10) * 10;
+				axises[face % NUM_FACE][i].face[j][k] = round(axises[face % NUM_FACE][i].face[j][k] / 10) * 10;
 			}
-		}
-	}
-}
-static void update_face_position(d_state x, int face[6][8]) {
-	
-	int face_set[6][8] = {
-	{1,2,5,6,1,2,5,9},
-	{0,3,4,7,0,3,7,11},
-	{2,3,6,7,2,3,6,10},
-	{0,1,4,5,0,1,4,8},
-	{0,1,2,3,4,5,6,7},
-	{4,5,6,7,8,9,10,11}
-	};
-	
-	for (int i = 0; i < 6; i++) {
-		for (int j = 0; j < 4; j++) {
-			face[i][j] = x.cp[face_set[i][j]];
-		}
-		for (int j = 4; j < 8; j++) {
-			face[i][j] = x.ep[face_set[i][j]];
 		}
 	}
 }
@@ -127,32 +105,32 @@ static void z_rotate(double degree, double xyz[3]) {
 }
 static void rotate(int face, int xyzmode) {
 	static rfunc xyzrotate[3] = { x_rotate,y_rotate,z_rotate };
-	if (input == 18) {
+	if (input == PHASE1_MOVE) {
 		return;
 	}
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < NUM_FOUR_CORNER; i++)
 	{
-		for (int j = 0; j < 6; j++)
+		for (int j = 0; j < NUM_FACE; j++)
 		{
-			for (int k = 0; k < 4; k++)
+			for (int k = 0; k < NUM_FOUR_CORNER; k++)
 			{
-				(xyzrotate[xyzmode])(corresponding_table_from_move_to_degree_and_direction[1][input], corners[face_posi[face % 6][i]][j].face[k]);
+				(xyzrotate[xyzmode])(corresponding_table_from_move_to_degree_and_direction[1][input], corners[face_posi[face % NUM_FACE][i]][j].face[k]);
 			}
 		}
 	}
-	for (int i = 0 + 4; i < 4 + 4; i++)
+	for (int i = 0 + 4; i < 4 + NUM_FOUR_CORNER; i++)
 	{
-		for (int j = 0; j < 6; j++)
+		for (int j = 0; j < NUM_FACE; j++)
 		{
-			for (int k = 0; k < 4; k++)
+			for (int k = 0; k < NUM_FOUR_CORNER; k++)
 			{
-				(xyzrotate[xyzmode])(corresponding_table_from_move_to_degree_and_direction[1][input], edges[face_posi[face % 6][i]][j].face[k]);
+				(xyzrotate[xyzmode])(corresponding_table_from_move_to_degree_and_direction[1][input], edges[face_posi[face % NUM_FACE][i]][j].face[k]);
 			}
 		}
 	}
-	for (int j = 0; j < 6; j++) {
-		for (int k = 0; k < 4; k++) {
-			(xyzrotate[xyzmode])(corresponding_table_from_move_to_degree_and_direction[1][input], axises[input % 6][j].face[k]);
+	for (int j = 0; j < NUM_FACE; j++) {
+		for (int k = 0; k < NUM_FOUR_CORNER; k++) {
+			(xyzrotate[xyzmode])(corresponding_table_from_move_to_degree_and_direction[1][input], axises[input % NUM_FACE][j].face[k]);
 		}
 	}
 }
@@ -188,7 +166,7 @@ static void disp_cube() {
 	for (int i = 0; i < 6; i++) {
 		for (int j = 0; j < 6; j++) {
 			glNormal3iv(normal[j]);
-			glColor3dv(edges[i][j].color);
+			glColor3dv(axises[i][j].color);
 			for (int k = 0; k < 4; k++) {
 				glVertex3dv(axises[i][j].face[k]);
 			}
@@ -210,9 +188,9 @@ static void disp_xyzaxis() {
 	glFlush();
 }
 static void display() {
-	//printf("input:%d \n", input);
 	static int count = 0;
 	static double angle = 0;
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_DEPTH_TEST);
@@ -221,7 +199,7 @@ static void display() {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	gluLookAt(120.0, 80.0, 80.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-	//glRotated(angle, 0.0, 1.0, 0.0);
+	//glRotated(angle, -0.2, 0.1, 0.5);
 
 	disp_xyzaxis();
 	disp_cube();
@@ -238,18 +216,20 @@ static void display() {
 		if (count >= RA) {
 			count = 0;
 			phase1_motion(get_state_value_address(),input);
-			//simuration(get_state_value_address(), input);
-			update_face_position(*get_state_value_address(), face_posi);
+			printf(">answer input\n");
+			disp_state(*get_state_value_address());
+			update_cube_group(*get_state_value_address(), face_posi);
 			floor_value_of_coordinate(input);
-			input = 18;
-			if (motion_count == -1) {
+			input = PHASE1_MOVE;
+			if (count_down_motion == -1) {
 				mode = 0;
-				reset();
+				printf(">solved\n");
+				disp_state(*get_state_value_address());
 			}
 		}
 		else {
 			rotate(input, corresponding_table_from_move_to_degree_and_direction[0][input]);
-			if (input != 18) {
+			if (input != PHASE1_MOVE) {
 				count++;
 			}
 		}
@@ -258,14 +238,15 @@ static void display() {
 		if (count >= RA) {
 			count = 0;
 			phase1_motion(get_state_value_address(), input);
-			//simuration(get_state_value_address(), input);
-			update_face_position(*get_state_value_address(), face_posi);
+			printf(">input is done\n");
+			disp_state(*get_state_value_address());
+			update_cube_group(*get_state_value_address(), face_posi);
 			floor_value_of_coordinate(input);
-			input = 18;
+			input = PHASE1_MOVE;
 		}
 		else {
 			rotate(input, corresponding_table_from_move_to_degree_and_direction[0][input]);
-			if (input != 18) {
+			if (input != PHASE1_MOVE) {
 				count++;
 			}
 		}
@@ -277,9 +258,9 @@ static void display() {
 	glutSwapBuffers();
 }
 static void idle() {
-	if ((mode == 1) && (input == 18)) {
-		input = motion_list[motion_count];
-		motion_count--;
+	if ((mode == 1) && (input == PHASE1_MOVE)) {
+		input = get_motion_list_address()[count_down_motion];
+		count_down_motion--;
 	}
 	glutPostRedisplay();
 }
@@ -293,22 +274,21 @@ static void reshape(int w, int h) {
 	gluPerspective(75.0, (double)w / h, 10.0, 6000.0);
 }
 static void keyboard(unsigned char k, int x, int y) {
-	if ((input == 18) && (mode == 0)) {
-		for (int i = 0; i < 19;i++) {
+	if ((input == PHASE1_MOVE) && (mode == 0)) {
+		for (int i = 0; i < PHASE1_MOVE+1;i++) {
 			if (k == key_set[i]) {
-				if (i == 18) {
+				if (i == PHASE1_MOVE) {
 					search(*get_state_value_address());
-					printf("[");
-					for (int i = motion_count - 1; i >= 0; i--) {
-						printf("%d ", motion_list[i]);
-					}
-					printf("(%d)\n", motion_count);
-					if (motion_count > 0) {
-						motion_count--;
+
+					count_down_motion = *get_motion_count_address();
+					if (count_down_motion > 0) {
+						count_down_motion--;
 						mode = 1;
 					}
 				}
 				else {
+					printf(">keyboard input\n");
+					disp_state(*get_state_value_address());
 					input = i;
 				}
 				break;
@@ -316,22 +296,13 @@ static void keyboard(unsigned char k, int x, int y) {
 		}
 	}
 }
-void reset() {
-	init_state(get_state_value_address());
-	init_corner();
-	init_edge();
-	init_axises();
-	//init_cube_color();
-	//init_face_position(face_posi);
-	init_motion_list();
-}
-void key_setting(int i,char x) {
-	if ((0<=i)&&(i<=18)) {
-		key_set[i] = x;
+
+void key_setting(int index,char key) {
+	if ((0<=index)&&(index<=PHASE1_MOVE)) {
+		key_set[index] = key;
 	}
 }
 void graphic(int argc, char** argv) {
-	reset();
 	printf("q: R/ w: L/ e: F/ r: B/ t: U/ y: D/ u: R_/ i: L_/ o: F_/ p: B_/ a: U_/ s: D_/ d: R2/ f: L2/ g: F2/ h: B2/ j: U2/ k: D2/ x:start_search\n");
 	glutInit(&argc, argv);
 	glutInitWindowSize(WID, HIG);
