@@ -1,33 +1,39 @@
 #include"rubiks_cube_solver.h"
 #include"rubiks_cube_graphic.h"
+#include<stdio.h>
 int main(int argc, char** argv) {
 	double color[6][3] = {
-		{0.3,0.4,0.8},
-		{0.7,0.8,0.5},
-		{0.8,0.2,0.1},
-		{0.2,0.6,0.3},
-		{0.0,0.5,0.8},
-		{0.2,0.6,0.6}
+		{0.0,1.0,0.0},
+		{1.0,1.0,0.0},
+		{0.0,0.5,1.0},
+		{1.0,1.0,1.0},
+		{1.0,0.5,0.0},
+		{1.0,0.0,0.0}
 	};
+	int m_c = 0;
+	init_motion_count(&m_c);
+
+	int m_l[VECTOR_LEN] = { 0 };
+	init_motion_list(m_l);
+
+	d_state ss;
+	init_cube_state(&ss);
+
 	init_move();
 	init_transfer_table();
 	init_prune_table();
 	init_state(get_state_value_address());
-	init_cube_color(color);
-	init_corner();
-	init_edge();
+
+	read_csv_file(&ss, "jikkemBook.csv");
+
+	printf(">get data from csv file\n");
+	disp_state(*get_state_value_address());
+
+	init_shuffled_cube(ss, color);
+	init_corner(&ss);
+	init_edge(&ss);
 	init_axises();
-	//init_face_position(face_posi);
-	init_motion_list();
+
+
 	graphic(argc, argv);
 }
-/*
-double color[6][3] = {
-		{1.0,1.0,1.0},
-		{1.0,0.0,0.0},
-		{0.0,1.0,0.0},
-		{1.0,1.0,0.0},
-		{1.0,0.5,0.0},
-		{0.0,0.0,1.0}
-	};
-*/
