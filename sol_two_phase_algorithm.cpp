@@ -1,14 +1,27 @@
 #include"rubiks_cube_solver.h"
 #include<stdio.h>
+#include <time.h>
+static int path1[VECTOR_LEN] = { 0 };
+static int path2[VECTOR_LEN] = { 0 };
+static int mnum1 = 0;
+static int mnum2 = 0;
+static int min_mnum1 = 0;
+static int min_mnum2 = 0;
+static int min_motion_count = 0;
+static int is_time_out = 0;
+static int time_limit = TIMELIMIT;
+static time_t start_time;
+static int coorresponding_table_from_phase2_move_to_phase1_move[PHASE2_MOVE] = { 12,13,14,15,16,17,4,5,10,11 };
+static void phase2_solver(d_phase2_state start);
 static int is_phase1_move_available(int premove, int currmove) {
 	if (premove == PHASE1_MOVE) {
 		return 1;
 	}
-	else if (currmove % 6 == premove % 6) {
+	else if (currmove % NUM_FACE == premove % NUM_FACE) {
 		return 0;
 	}
-	else if ((premove % 6) % 2 == 1) {
-		if (currmove % 6 == (premove - 1) % 6) {
+	else if ((premove % NUM_FACE) % 2 == 1) {
+		if (currmove % NUM_FACE == (premove - 1) % NUM_FACE) {
 			return 0;
 		}
 		else {
@@ -67,99 +80,6 @@ static int is_phase2_move_available(int premove, int currmove) {
 		return 1;
 	}
 }
-void shuffle(d_state* x, char q[QLIM][3], int n) {
-	for (int i = 0; i < n; i++) {
-		switch (q[i][0]) {
-		case 'R':
-			if (q[i][1] == '\0') {
-				R(x);
-			}
-			else if (q[i][1] == '2') {
-				R2(x);
-			}
-			else if (q[i][1] == '_') {
-				R_(x);
-			}
-			else {
-				break;
-			}
-			break;
-		case 'B':
-			if (q[i][1] == '\0') {
-				B(x);
-			}
-			else if (q[i][1] == '2') {
-				B2(x);
-			}
-			else if (q[i][1] == '_') {
-				B_(x);
-			}
-			else {
-				break;
-			}
-			break;
-		case 'L':
-			if (q[i][1] == '\0') {
-				L(x);
-			}
-			else if (q[i][1] == '2') {
-				L2(x);
-			}
-			else if (q[i][1] == '_') {
-				L_(x);
-			}
-			else {
-				break;
-			}
-			break;
-		case 'F':
-			if (q[i][1] == '\0') {
-				F(x);
-			}
-			else if (q[i][1] == '2') {
-				F2(x);
-			}
-			else if (q[i][1] == '_') {
-				F_(x);
-			}
-			else {
-				break;
-			}
-			break;
-		case 'U':
-			if (q[i][1] == '\0') {
-				U(x);
-			}
-			else if (q[i][1] == '2') {
-				U2(x);
-			}
-			else if (q[i][1] == '_') {
-				U_(x);
-			}
-			else {
-				break;
-			}
-			break;
-		case 'D':
-			if (q[i][1] == '\0') {
-				D(x);
-			}
-			else if (q[i][1] == '2') {
-				D2(x);
-			}
-			else if (q[i][1] == '_') {
-				D_(x);
-			}
-			else {
-				break;
-			}
-			break;
-		default:
-			break;
-
-		}
-	}
-}
 static int is_solved_phase1(d_phase1_state x) {
 	if ((x.index_co == 0) && (x.index_eo == 0) && (x.index_e_con == 0)) {
 		return 1;
@@ -176,22 +96,60 @@ static int is_solved_phase2(d_phase2_state x) {
 		return 0;
 	}
 }
-static int phase1_ida_star(d_phase1_state from1, int current, int count, int depth) {
+static int phase1_ida_star(d_state s_from1,d_phase1_state from1, int current, int count, int depth) {
 	int f = 1;
-	if (is_solved_phase1(from1)) {
-		return 0;
-	}
-	if (((depth - count) < get_co_e_con_prune_table(from1.index_co,from1.index_e_con)) || ((depth - count) < get_eo_e_con_prune_table(from1.index_eo,from1.index_e_con))) {
+	time_t now_time;
+	now_time = time(NULL);
+
+	if ((now_time - start_time)>time_limit) {
+		is_time_out = 1;
 		return 1;
 	}
+
+	if (((depth - count) < get_co_e_con_prune_table(from1.index_co, from1.index_e_con)) || ((depth - count) < get_eo_e_con_prune_table(from1.index_eo, from1.index_e_con))) {
+		return 1;
+	}
+
+	if (is_solved_phase1(from1)) {
+
+		d_phase2_state state2;
+		state2.index_cp = cp_to_index(s_from1.cp);
+		state2.index_ud_ep = ud_ep_to_index(s_from1.ep);
+		state2.index_e_ep = e_ep_to_index(s_from1.ep);
+		phase2_solver(state2);
+
+		if (mnum1 + mnum2 < min_motion_count) {
+			min_mnum1 = mnum1;
+			min_mnum2 = mnum2;
+			min_motion_count = mnum1 + mnum2;
+			int count = 0;
+			for (int i = 0; i < mnum2;i++) {
+				get_motion_list_address()[count] = coorresponding_table_from_phase2_move_to_phase1_move[path2[i]];
+				count++;
+			}
+			for (int i = mnum1-1; i >= 0;i--) {
+				get_motion_list_address()[count] = path1[i];
+				count++;
+			}
+		}
+		mnum2 = 0;
+	}
+	
 	for (int i = 0; i < PHASE1_MOVE; i++) {
 		if (is_phase1_move_available(current, i)) {
-			d_phase1_state to1;
-			move1(from1, &to1, i);
-			f = phase1_ida_star(to1, i, count + 1, depth);
 			path1[mnum1] = i;
-			if (f == 0) {
-				mnum1++;
+			mnum1++;
+
+			d_state s_to1;
+			d_phase1_state to1;
+
+			copy_state(s_from1,&s_to1);
+			phase1_motion(&s_to1,i);
+			move1(from1, &to1, i);
+			f = phase1_ida_star(s_to1,to1, i, count + 1, depth);
+			mnum1--;
+
+			if (is_time_out) {
 				return 0;
 			}
 		}
@@ -220,9 +178,9 @@ static int phase2_ida_star(d_phase2_state from2, int current, int count, int dep
 	}
 	return 1;
 }
-static void phase1_solver(d_phase1_state start) {
+static void phase1_solver(d_state s,d_phase1_state start) {
 	int depth = 0;
-	while (phase1_ida_star(start, PHASE1_MOVE, 0, depth)) {
+	while (phase1_ida_star(s,start, PHASE1_MOVE, 0, depth)) {
 		depth++;
 	}
 }
@@ -232,44 +190,44 @@ static void phase2_solver(d_phase2_state start) {
 		depth++;
 	}
 }
-void copy_state(d_state* to) {
-	d_state* from = get_state_value_address();
-	for (int i = 0; i < NUM_CORNER;i++) {
-		to->cp[i] = from->cp[i];
-		to->co[i] = from->co[i];
-	}
-	for (int i = 0; i < NUM_EDGE;i++) {
-		to->ep[i] = from->ep[i];
-		to->eo[i] = from->eo[i];
-	}
+static void revert_to__initial_state() {
+	is_time_out = 0;
+	min_motion_count = 0;
+	min_mnum1 = 0;
+	min_mnum2 = 0;
+	mnum1 = 0;
+	mnum2 = 0;
+}
+static void set_timer() {
+	start_time = time(NULL);
+}
+void init_timer(int second) {
+	time_limit = second;
 }
 void search(d_state start) {
-	//d_state rest[GENERATION];
-	d_phase1_state state1;
-	d_phase2_state state2;
-	//int qnum = 0;
-	//char query[QLIM][3] = { 0 };
+	printf(">serche start\n");
+	disp_state(*get_state_value_address());
 
+	min_motion_count = VECTOR_LEN;
+
+	d_phase1_state state1;
+	
 	state1.index_co = co_to_index(start.co);
 	state1.index_eo = eo_to_index(start.eo);
 	state1.index_e_con = e_con_to_index(start.ep);
-	phase1_solver(state1);
-	for (int i = mnum1 - 1; i >= 0; i--) {
-		phase1_motion(&start, path1[i]);
-		//(phase1_move[path1[i]])(&start);
+
+	set_timer();
+
+	phase1_solver(start,state1);
+
+	*get_motion_count_address() = min_motion_count;
+
+	revert_to__initial_state();
+
+
+	printf("[");
+	for (int i = *get_motion_count_address() - 1; i >= 0; i--) {
+		printf("%s ", from_index_to_motion[get_motion_list_address()[i]]);
 	}
-	
-		state2.index_cp = cp_to_index(start.cp);
-		state2.index_ud_ep = ud_ep_to_index(start.ep);
-		state2.index_e_ep = e_ep_to_index(start.ep);
-		phase2_solver(state2);
-	
-	for (int i = 0; i < mnum2; i++) {
-		motion_list[motion_count] = coorresponding_table_from_phase2_move_to_phase1_move[path2[i]];
-		motion_count++;
-	}
-	for (int i = 0; i < mnum1; i++) {
-		motion_list[motion_count] = path1[i];
-		motion_count++;
-	}
+	printf("motion_count(%d)\n", *get_motion_count_address());
 } 
