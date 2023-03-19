@@ -7,8 +7,8 @@
 **/
 #include"rubiks_cube_definition.h"
 
-#define WID 640
-#define HIG 640
+#define WID 300
+#define HIG 300
 #define X_AXIS 30
 #define Y_AXIS 30
 #define Z_AXIS 30
@@ -21,26 +21,20 @@
 #define MOVE 18
 
 typedef struct data_face {
-	double face[4][3];
+	double face[NUM_FOUR_CORNER][3];
 	double color[3];
 }d_face;
-
 typedef void(*rfunc)(double, double*);
-//extern double cube[6][4][3];
-//extern int face_set[6][8];
-extern int face_posi[6][8];
-//extern double corner_seed[8][3];
-//extern double edge_seed[12][3];
-extern d_face corners[8][6];
-extern d_face edges[12][6];
-extern d_face axises[6][6];
-void init_corner();
-void init_edge();
+extern int face_posi[NUM_FACE][8];
+extern d_face corners[NUM_CORNER][NUM_FACE];
+extern d_face edges[NUM_EDGE][NUM_FACE];
+extern d_face axises[NUM_FACE][NUM_FACE];
+void init_corner(d_state* cube_state);
+void init_edge(d_state* cube_state);
 void init_axises();
-void init_cube_color(double colors[6][3]);
-//void init_face_position(int posi[6][8]);
+void init_shuffled_cube(d_state x, double fc[NUM_FACE][3]);
 void product(double matrix[3][3], double vector[3]);
-void reset();
 void graphic(int argc, char** argv);
-void key_setting(int i, char x);
+void key_setting(int index, char key);
+void update_cube_group(d_state x, int face[NUM_FACE][8]);
 #endif
