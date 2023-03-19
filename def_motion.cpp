@@ -1,21 +1,17 @@
 #include"rubiks_cube_definition.h"
 #include<stdio.h>
-int path1[VECTOR_LEN] = { 0 };
-int path2[VECTOR_LEN] = { 0 };
-int mnum1 = 0;
-int mnum2 = 0;
-int motion_count = 0;
-int motion_list[VECTOR_LEN] = { 0 };
+static int* motion_count;
+static int* motion_list;
+char from_index_to_motion[PHASE1_MOVE][3] = { "R","L","F","B","U","D","R_","L_","F_","B_","U_","D_","R2","L2","F2","B2","U2","D2"};
 static func phase1_move[PHASE1_MOVE] = { R,L,F,B,U,D,R_,L_,F_,B_,U_,D_,R2,L2,F2,B2,U2,D2 };
 static func phase2_move[PHASE2_MOVE] = { R2,L2,F2,B2,U2,D2,U,D,U_,D_ };
-int coorresponding_table_from_phase2_move_to_phase1_move[PHASE2_MOVE] = { 12,13,14,15,16,17,4,5,10,11 };
 static d_state r;
 static d_state b;
 static d_state l;
 static d_state f;
 static d_state u;
 static d_state d;
-static d_state state;
+static d_state* state;
 static int corner_identification_table[NUM_CORNER][3] = {
 	{9,29,36},
 	{2,27,38},
@@ -44,42 +40,42 @@ static int corner_index_table[65] = { 0 };
 static int edge_index_table[65] = { 0 };
 static int center_color_index[128] = { 0 };
 static char center_color_value[6] = { 0 };
-void disp_state(d_state x) {
+void disp_state(d_state cube_state) {
 	for (int i = 0; i < 8; i++) {
-		printf("%d ", x.cp[i]);
+		printf("%d ", cube_state.cp[i]);
 	}
 	printf("\n");
 	for (int i = 0; i < 8; i++) {
-		printf("%d ", x.co[i]);
+		printf("%d ", cube_state.co[i]);
 	}
 	printf("\n");
 	for (int i = 0; i < 12; i++) {
-		printf("%d ", x.ep[i]);
+		printf("%d ", cube_state.ep[i]);
 	}
 	printf("\n");
 	for (int i = 0; i < 12; i++) {
-		printf("%d ", x.eo[i]);
+		printf("%d ", cube_state.eo[i]);
 	}
 	printf("\n");
 }
-void init_state(d_state* x) {
+void init_state(d_state* cube_state) {
 	for (int i = 0; i < 8; i++) {
-		x->cp[i] = i;
-		x->co[i] = 0;
+		cube_state->cp[i] = i;
+		cube_state->co[i] = 0;
 	}
 	for (int i = 0; i < 12; i++) {
-		x->ep[i] = i;
-		x->eo[i] = 0;
+		cube_state->ep[i] = i;
+		cube_state->eo[i] = 0;
 	}
 }
-void clear_state(d_state* x) {
+void clear_state(d_state* cube_state) {
 	for (int i = 0; i < 8; i++) {
-		x->cp[i] = 0;
-		x->co[i] = 0;
+		cube_state->cp[i] = 0;
+		cube_state->co[i] = 0;
 	}
 	for (int i = 0; i < 12; i++) {
-		x->ep[i] = 0;
-		x->eo[i] = 0;
+		cube_state->ep[i] = 0;
+		cube_state->eo[i] = 0;
 	}
 }
 static void make_r(d_state* x) {////
@@ -542,22 +538,28 @@ void D_(d_state* x) {
 	D(x);
 }
 d_state* get_state_value_address() {
-	return &state;
+	return state;
 }
-void phase1_motion(d_state* x,int i) {
-	(phase1_move[i])(x);
+void init_cube_state(d_state* cube_state) {
+	state = cube_state;
 }
-void phase2_motion(d_state* x, int i) {
-	(phase2_move[i])(x);
+int* get_motion_list_address() {
+	return motion_list;
 }
-void init_motion_list() {
-	motion_count = 0;
-	mnum1 = 0;
-	mnum2 = 0;
-	for (int i = 0; i < VECTOR_LEN; i++) {
-		path1[i] = 0;
-		path2[i] = 0;
-	}
+void init_motion_list(int* list) {
+	motion_list = list;
+}
+int* get_motion_count_address() {
+	return motion_count;
+}
+void init_motion_count(int * count) {
+	motion_count = count;
+}
+void phase1_motion(d_state* cube_state,int index) {
+	(phase1_move[index])(cube_state);
+}
+void phase2_motion(d_state* cube_state, int index) {
+	(phase2_move[index])(cube_state);
 }
 static void init_corner_index_table() {
 	for (int i = 0; i < NUM_CORNER; i++) {
@@ -584,9 +586,6 @@ static void init_edge_index_table() {
 		int j = 0;
 		for (int k = 0; k < NUM_FACE; k++) {
 			if (edge_identification_table[i][j] / NUM_3_SQUARED == k) {
-				if (i == 3) {
-					printf(" KKK%d", k);
-				}
 				index += cardinal_num;
 				j++;
 			}
@@ -608,42 +607,164 @@ static int is_input_valid(char rest[54], char face[NUM_FACE]) {
 			}
 		}
 	}
-	for (int i = 0; i < 6;i++) {
-		printf("%d ",face_count[i]);
-	}
-	printf("\n");
 	for (int i = 0; i < NUM_FACE; i++) {
 		if (face_count[i] != NUM_3_SQUARED) {
-			printf("(%c)",face[i]);
 			return 0;
 		}
 	}
 	return 1;
 }
-int read_csv_file() {
+static void delete_comment(char from[VECTOR_LEN][VECTOR_LEN], char to[VECTOR_LEN][VECTOR_LEN],int row) {
+	int end = 0;
+	if (from[0][2] != '#') {
+		int i;
+		for (i = 0; from[0][i] != '\0';i++) {
+			to[end][i] = from[0][i];
+		}
+		to[end][i] = '\0';
+		end++;
+	}
+	for (int i = 1; i < row;i++) {
+		if (from[i][0] != '#') {
+			int j;
+			for (j = 0; from[i][j] != '\0'; j++) {
+				to[end][j] = from[i][j];
+			}
+			to[end][j] = '\0';
+			end++;
+		}
+	}
+}
+void copy_state(d_state from, d_state* to) {
+	for (int i = 0; i < NUM_CORNER; i++) {
+		to->cp[i] = from.cp[i];
+		to->co[i] = from.co[i];
+	}
+	for (int i = 0; i < NUM_EDGE; i++) {
+		to->ep[i] = from.ep[i];
+		to->eo[i] = from.eo[i];
+	}
+}
+void shuffle(d_state* cube_state, char query[QLIM][3], int size) {
+	for (int i = 0; i < size; i++) {
+		switch (query[i][0]) {
+		case 'R':
+			if (query[i][1] == '\0') {
+				R(cube_state);
+			}
+			else if (query[i][1] == '2') {
+				R2(cube_state);
+			}
+			else if (query[i][1] == '_') {
+				R_(cube_state);
+			}
+			else {
+				break;
+			}
+			break;
+		case 'B':
+			if (query[i][1] == '\0') {
+				B(cube_state);
+			}
+			else if (query[i][1] == '2') {
+				B2(cube_state);
+			}
+			else if (query[i][1] == '_') {
+				B_(cube_state);
+			}
+			else {
+				break;
+			}
+			break;
+		case 'L':
+			if (query[i][1] == '\0') {
+				L(cube_state);
+			}
+			else if (query[i][1] == '2') {
+				L2(cube_state);
+			}
+			else if (query[i][1] == '_') {
+				L_(cube_state);
+			}
+			else {
+				break;
+			}
+			break;
+		case 'F':
+			if (query[i][1] == '\0') {
+				F(cube_state);
+			}
+			else if (query[i][1] == '2') {
+				F2(cube_state);
+			}
+			else if (query[i][1] == '_') {
+				F_(cube_state);
+			}
+			else {
+				break;
+			}
+			break;
+		case 'U':
+			if (query[i][1] == '\0') {
+				U(cube_state);
+			}
+			else if (query[i][1] == '2') {
+				U2(cube_state);
+			}
+			else if (query[i][1] == '_') {
+				U_(cube_state);
+			}
+			else {
+				break;
+			}
+			break;
+		case 'D':
+			if (query[i][1] == '\0') {
+				D(cube_state);
+			}
+			else if (query[i][1] == '2') {
+				D2(cube_state);
+			}
+			else if (query[i][1] == '_') {
+				D_(cube_state);
+			}
+			else {
+				break;
+			}
+			break;
+		default:
+			break;
+
+		}
+	}
+}
+int read_csv_file(d_state* input,const char file_name[FILENAME]) {
 	FILE* fp = NULL;
 	errno_t no;
+	char srest[VECTOR_LEN][VECTOR_LEN];
 	char s[NUM_3_SQUARED][VECTOR_LEN];
 	char rest[VECTOR_LEN] = { 0 };
-	d_state* input = get_state_value_address();
+	int row_count = 0;
 
 	init_corner_index_table();
 	init_edge_index_table();
 
-	no = fopen_s(&fp, "Book0.csv", "r");
+	no = fopen_s(&fp, file_name , "r");
 	if (no != 0) {
 		printf("failed\n");
 		return 0;
 	}
-	for (int i = 0; fgets(s[i], VECTOR_LEN, fp) != NULL; i++) {
-		printf("+++%s", s[i]);
+	for (int i = 0; fgets(srest[i], VECTOR_LEN, fp) != NULL; i++) {
+		printf("%s", srest[i]);
+		row_count++;
 	}
 	printf("\n");
 
 	fclose(fp);
 
+	delete_comment(srest,s,row_count);
+
 	int k = 36;
-	printf("U\n");
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; s[i][j] != '\0'; j++) {
 			if (('a' <= s[i][j]) && (s[i][j] <= 'z')) {
@@ -653,7 +774,6 @@ int read_csv_file() {
 		}
 	}
 
-	printf("L\n");
 	k = 9;
 	for (int i = 3; i < 6; i++) {
 		int j = 0;
@@ -666,7 +786,6 @@ int read_csv_file() {
 		j += 18;
 	}
 
-	printf("F\n");
 	k = 18;
 	for (int i = 3; i < 6; i++) {
 		int j = 6;
@@ -679,7 +798,6 @@ int read_csv_file() {
 		j += 18;
 	}
 
-	printf("R\n");
 	k = 0;
 	for (int i = 3; i < 6; i++) {
 		int j = 12;
@@ -692,7 +810,6 @@ int read_csv_file() {
 		j += 18;
 	}
 
-	printf("B\n");
 	k = 27;
 	for (int i = 3; i < 6; i++) {
 		int j = 18;
@@ -705,7 +822,6 @@ int read_csv_file() {
 		j += 18;
 	}
 
-	printf("D\n");
 	k = 45;
 	for (int i = 6; i < 9; i++) {
 		for (int j = 0; s[i][j] != '\0'; j++) {
@@ -791,7 +907,7 @@ int read_csv_file() {
 		}
 	}
 
-	for (int i = 0; i < 8; i++) {
+	/*for (int i = 0; i < 8; i++) {
 		printf("%d ", input->cp[i]);
 	}
 	printf("\n");
@@ -806,7 +922,8 @@ int read_csv_file() {
 	for (int i = 0; i < 12; i++) {
 		printf("%d ", input->eo[i]);
 	}
-	printf("\n");
+	printf("\n");*/
 	return 1;
 }
+
 
