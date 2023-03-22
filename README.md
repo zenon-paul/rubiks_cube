@@ -110,7 +110,7 @@ search(*get_state_value_address());
 探索開始です。
 
 ### ルービックキューブの表示/キーボード入力
-ルービックキューブを3D空間上に生成するのに必要な情報は、ルービックキューブ生成時に定義したd_state型の実体と面の色に関する情報です。
+ルービックキューブを3D空間上に生成するのに必要な情報はルービックキューブ生成時に定義したd_state型の実体と面の色に関する情報です。
 ```
 double color[6][3] = {
 		{0.0,1.0,0.0},
@@ -121,17 +121,12 @@ double color[6][3] = {
 		{1.0,0.0,0.0}
 	};
 ```
-このような配列を作っておきます。
-これは面の色を表します。
+色を指定するためにこのような配列を作っておきます。
 
-![umage]https://user-images.githubusercontent.com/123747386/226779234-db39604a-8952-4cae-abad-452700fbf27e.png)
+![image]https://user-images.githubusercontent.com/123747386/226779234-db39604a-8952-4cae-abad-452700fbf27e.png)
+面には上の画像のように番号が振られています。color[i]の配列はi面の色を表しており、赤、緑、青の順で
+0以上1以下の値を指定します。
 
-```
-init_shuffled_cube(*get_state_value_address(), color);
-init_corner(get_state_value_address());
-init_edge(get_state_value_address());
-init_axises();
-```
 ```
 init_shuffled_cube(*get_state_value_address(), color);
 ```
@@ -148,7 +143,8 @@ graphic(argc, argv);
 描画開始です。特にこの関数を呼び出すとプログラム終了までmain関数に戻れないため、気を付けてください。
 またこの関数を呼ぶと、キーボードによるリアルタイムで様々な操作が可能になります。
 
-
+### キーボード操作
+graphic(argc, argv);を呼び出すとキーボード操作が可能になります。
 ## 目的別関数一覧
 
 未完（まだまだ書きます。）
