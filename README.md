@@ -50,11 +50,7 @@
 ![スクリーンショット 2023-03-22 094211 - コピー](https://user-images.githubusercontent.com/123747386/226796706-e67201d9-92d1-4464-be97-e025c26e5de8.jpg)
 ![スクリーンショット 2023-03-22 094211 - コピー (3)](https://user-images.githubusercontent.com/123747386/226796738-305daaa1-94b7-4108-afa7-ab52f2a48c22.jpg)
 ![スクリーンショット 2023-03-22 094211 - コピー (4) - コピー](https://user-images.githubusercontent.com/123747386/226796746-ffb939ec-351a-47ad-92bf-538e474eaedb.jpg)
-
-
-
-
-
+![スクリーンショット 2023-03-22 094211 - コピー (5) - コピー](https://user-images.githubusercontent.com/123747386/226797805-9afb2c0f-35e2-4f29-843a-9bda834c006e.jpg)
 ![スクリーンショット 2023-03-22 094211 - コピー (6)](https://user-images.githubusercontent.com/123747386/226796981-6608c242-8e53-4d1d-93f3-e059e5540c92.jpg)
 ![スクリーンショット 2023-03-22 094211 - コピー (10) - コピー](https://user-images.githubusercontent.com/123747386/226796986-6cddf25c-a705-45db-870c-81a6fe0e024a.jpg)
 ![スクリーンショット 2023-03-22 094211 - コピー (11) - コピー](https://user-images.githubusercontent.com/123747386/226796994-b8be3cae-4436-47c6-840b-223374d28405.jpg)
@@ -153,6 +149,7 @@ double color[6][3] = {
 色を指定するためにこのような配列を作っておきます。
 
 ![image](https://user-images.githubusercontent.com/123747386/226779234-db39604a-8952-4cae-abad-452700fbf27e.png)
+
 面には上の画像のように番号が振られています。color[i]の配列はi面の色を表しており、赤、緑、青の順で
 0以上1以下の値を指定します。
 
@@ -179,6 +176,18 @@ graphic(argc, argv);を呼び出すとキーボード操作が可能になりま
 void key_setting();
 ```
 で現在のキーボード設定を確認できます。
+
+初期設定では
+
+* [x]キー
+	* 解の探索開始
+* [z]キー
+	* 発見した解に従って自動で揃える
+* [c]キー
+	* 発見した解に従って一手進める
+* [v]キー
+	* [c]キーで進めた分を戻す。
+
 ## 目的別関数一覧
 
 未完（まだまだ書きます。）
