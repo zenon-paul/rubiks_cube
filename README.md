@@ -41,16 +41,16 @@
 
 本ライブラリではルービックキューブに対し18個の操作を定義していて、それぞれに名前がついています。
 テキストファイルでの操作指定や解の手順の列挙のために以下の名称を使います。
-![スクリーンショット 2023-03-22 094211 - コピー (2) - コピー](https://user-images.githubusercontent.com/123747386/226789689-7c2956ba-487d-4742-abc9-afa17605c84a.png)
-![スクリーンショット 2023-03-22 094211 - コピー (2)](https://user-images.githubusercontent.com/123747386/226789722-a3f18efc-6403-477b-8466-733752f93e11.png)
-![スクリーンショット 2023-03-22 094211 - コピー (3) - コピー](https://user-images.githubusercontent.com/123747386/226789730-295569f2-25b5-453a-a670-af6c8ef7bb59.png)
-![スクリーンショット 2023-03-22 094211 - コピー - コピー (2)](https://user-images.githubusercontent.com/123747386/226793400-263b9682-4692-4933-a7fb-86e2398dd212.png)
-![スクリーンショット 2023-03-22 094211 - コピー - コピー](https://user-images.githubusercontent.com/123747386/226793428-f30d52be-f583-49bd-8d9a-133fea09c5d2.png)
-![スクリーンショット 2023-03-22 094211 - コピー](https://user-images.githubusercontent.com/123747386/226793457-d35b2d02-618b-44c0-bc4f-2d00fe8cbcb9.png)
-![スクリーンショット 2023-03-22 094211 - コピー (3)](https://user-images.githubusercontent.com/123747386/226793569-05cea50f-0386-42a3-aa6c-d0b666726358.png)
-![スクリーンショット 2023-03-22 094211 - コピー (4) - コピー](https://user-images.githubusercontent.com/123747386/226793583-87fc9362-ffb4-438c-9dd0-d0a0bb304da5.png)
-![スクリーンショット 2023-03-22 094211 - コピー (5) - コピー](https://user-images.githubusercontent.com/123747386/226793592-294ca6da-56fa-4c5d-ab0b-2c5f5b608f34.png)
 
+![スクリーンショット 2023-03-22 094211 - コピー (2) - コピー](https://user-images.githubusercontent.com/123747386/226796658-8b3b7886-602d-4d04-8624-5956484812b3.jpg)
+![スクリーンショット 2023-03-22 094211 - コピー (2)](https://user-images.githubusercontent.com/123747386/226796666-f7147b88-0594-426e-a658-988de3ba6329.jpg)
+![スクリーンショット 2023-03-22 094211 - コピー (3) - コピー](https://user-images.githubusercontent.com/123747386/226796673-a8db2b78-6fc3-4af8-8367-007b304622c1.jpg)
+![スクリーンショット 2023-03-22 094211 - コピー - コピー (2)](https://user-images.githubusercontent.com/123747386/226796687-275223a1-9d06-40c7-91c5-c1b827309bff.jpg)
+![スクリーンショット 2023-03-22 094211 - コピー - コピー](https://user-images.githubusercontent.com/123747386/226796697-cebdb6df-aa67-4b04-b804-c7f7ebca131c.jpg)
+![スクリーンショット 2023-03-22 094211 - コピー](https://user-images.githubusercontent.com/123747386/226796706-e67201d9-92d1-4464-be97-e025c26e5de8.jpg)
+![スクリーンショット 2023-03-22 094211 - コピー (3)](https://user-images.githubusercontent.com/123747386/226796738-305daaa1-94b7-4108-afa7-ab52f2a48c22.jpg)
+![スクリーンショット 2023-03-22 094211 - コピー (4) - コピー](https://user-images.githubusercontent.com/123747386/226796746-ffb939ec-351a-47ad-92bf-538e474eaedb.jpg)
+![スクリーンショット 2023-03-22 094211 - コピー (5)](https://user-images.githubusercontent.com/123747386/226796766-77c28357-a5d1-436a-a2da-0836f2d23018.jpg)
 
 
 
