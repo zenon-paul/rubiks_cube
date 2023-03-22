@@ -557,6 +557,7 @@ int* get_motion_count_address() {
 }
 void init_motion_count(int * count) {
 	motion_count = count;
+	*motion_count = 0;
 }
 void phase1_motion(d_state* cube_state,int index) {
 	(phase1_move[index])(cube_state);
