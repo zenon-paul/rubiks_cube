@@ -123,6 +123,7 @@ double color[6][3] = {
 ```
 このような配列を作っておきます。
 これは面の色を表します。
+
 ![umage]https://user-images.githubusercontent.com/123747386/226779234-db39604a-8952-4cae-abad-452700fbf27e.png)
 
 ```
