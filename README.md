@@ -51,6 +51,9 @@
 ![スクリーンショット 2023-03-22 094211 - コピー (4) - コピー](https://user-images.githubusercontent.com/123747386/226793583-87fc9362-ffb4-438c-9dd0-d0a0bb304da5.png)
 ![スクリーンショット 2023-03-22 094211 - コピー (5) - コピー](https://user-images.githubusercontent.com/123747386/226793592-294ca6da-56fa-4c5d-ab0b-2c5f5b608f34.png)
 
+
+
+
 ## 使い方
 ここでは大まかな使い方を説明します。
 ### ルービックキューブの生成
