@@ -122,6 +122,8 @@ double color[6][3] = {
 	};
 ```
 このような配列を作っておきます。
+これは面の色を表します。
+[
 ```
 init_shuffled_cube(*get_state_value_address(), color);
 init_corner(get_state_value_address());
