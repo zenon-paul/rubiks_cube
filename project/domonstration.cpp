@@ -25,14 +25,14 @@ int main(int argc, char** argv) {
 	make_solved_state(get_state_value_address());
 
 	//read_csv_file(&ss, "jikkemBooknonbom.csv");
-	read_text_file(&ss,"jikken.txt");
+	read_text_file(get_state_value_address(),"jikken.txt");
 
 	//printf(">get data from csv file\n");
 	//disp_state(*get_state_value_address());
 
-	init_shuffled_cube(ss, color);
-	init_corner(&ss);
-	init_edge(&ss);
+	init_shuffled_cube(*get_state_value_address(), color);
+	init_corner(get_state_value_address());
+	init_edge(get_state_value_address());
 	init_axises();
 
 
