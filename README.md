@@ -1,3 +1,4 @@
+⚠編集中⚠
 # rubik's cube solver / simulator
 
 ## このリポジトリの説明
